@@ -90,7 +90,7 @@ import {
   
               <Col xs={24} sm={24} md={24} lg={10} xl={10}>
   
-                <img alt="logo" src={logo} className="images-logo" />
+                <img alt="logo" src={logo} className="images-logo" style={{ width: "100%" }}/>
   
               </Col>
   
