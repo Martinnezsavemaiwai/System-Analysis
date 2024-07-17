@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โน้ตบุ๊ก รุ่น A - TechStore</title>
+    <style>
+        /* เพิ่ม CSS จากหน้าแรก และเพิ่มสไตล์เฉพาะสำหรับหน้ารายละเอียดสินค้า */
+        .product-detail {
+            display: flex;
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        .product-images {
+            width: 50%;
+            padding-right: 20px;
+        }
+
+        .main-image {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .thumbnail-images {
+            display: flex;
+            gap: 10px;
+        }
+
+        .thumbnail-images img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .product-info {
+            width: 50%;
+        }
+
+        .product-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .product-description {
+            margin-bottom: 20px;
+        }
+
+        .add-to-cart {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .add-to-cart:hover {
+            background-color: #0056b3;
+        }
+
+        .product-specs {
+            margin-top: 20px;
+        }
+
+        .product-specs h3 {
+            margin-bottom: 10px;
+        }
+
+        .spec-item {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        .spec-label {
+            width: 150px;
+            font-weight: bold;
+        }
+
+        .reviews {
+            margin-top: 40px;
+        }
+
+        .review-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .review-author {
+            font-weight: bold;
+        }
+
+        .review-rating {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- ใช้ header เดียวกับหน้าแรก -->
+    </header>
+
+    <main class="product-detail">
+        <div class="product-images">
+            <img src="https://media-cdn.bnn.in.th/372876/msi-notebook-katana-17-b13vfk-1064th-black-3-square_medium.jpg" alt="KATANA 17 B13VFK" class="main-image">
+            <div class="thumbnail-images">
+                <img src="https://i.ytimg.com/vi/FcD__nQlB0Y/maxresdefault.jpg" alt="โน้ตบุ๊ก รุ่น A - ภาพ 1">
+                <img src="https://media-cdn.bnn.in.th/373002/msi-notebook-katana-a17-ai-b8vf-841th-black-1-square_medium.jpg" alt="โน้ตบุ๊ก รุ่น A - ภาพ 2">
+                <img src="https://cdn.cs.1worldsync.com/0e/b6/0eb6b565-3653-4851-852d-4b7ea04e8783.jpg" alt="โน้ตบุ๊ก รุ่น A - ภาพ 3">
+            </div>
+        </div>
+        <div class="product-info">
+            <h1 class="product-title">KATANA 17 B13VFK</h1>
+            <p class="product-price">฿35,900</p>
+            <div class="product-description">
+                <p>โน้ตบุ๊กประสิทธิภาพสูง เหมาะสำหรับการทำงานและความบันเทิง มาพร้อมหน้าจอ Full HD ขนาด 15.6 นิ้ว, CPU Intel Core i7 รุ่นล่าสุด, RAM 16GB และ SSD 512GB</p>
+            </div>
+            <button class="add-to-cart">เพิ่มลงในรถเข็น</button>
+            <div class="product-specs">
+                <h3>ข้อมูลจำเพาะ</h3>
+                <div class="spec-item">
+                    <span class="spec-label">หน้าจอ:</span>
+                    <span>15.6 นิ้ว Full HD (1920 x 1080)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">CPU:</span>
+                    <span>Intel Core i7-11xxx</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">RAM:</span>
+                    <span>16GB DDR4</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Storage:</span>
+                    <span>512GB NVMe SSD</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">กราฟิก:</span>
+                    <span>NVIDIA GeForce RTX 3050</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="reviews container">
+        <h2>รีวิวจากลูกค้า</h2>
+        <div class="review-item">
+            <p class="review-author">คุณ สมชาย</p>
+            <p class="review-rating">★★★★★</p>
+            <p>โน้ตบุ๊กเครื่องนี้ตอบโจทย์การใช้งานมาก ทั้งเล่นเกม ทำงาน ดูหนัง ทำได้ดีหมด คุ้มค่ากับราคามากครับ</p>
+        </div>
+        <div class="review-item">
+            <p class="review-author">คุณ สมหญิง</p>
+            <p class="review-rating">★★★★☆</p>
+            <p>ใช้งานดี เร็ว แบตอึดมาก แต่น้ำหนักเครื่องค่อนข้างหนักนิดนึงค่ะ</p>
+        </div>
+        <!-- เพิ่มรีวิวอื่นๆ ตามต้องการ -->
+    </section>
+
+    <footer>
+        <!-- ใส่ footer เหมือนหน้าแรก -->
+    </footer>
+
+    <script>
+        // JavaScript สำหรับการสลับรูปภาพและฟังก์ชันอื่นๆ
+        const mainImage = document.querySelector('.main-image');
+        const thumbnails = document.querySelectorAll('.thumbnail-images img');
+
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                mainImage.src = this.src;
+                mainImage.alt = this.alt;
+            });
+        });
+
+        // เพิ่มฟังก์ชันสำหรับการเพิ่มสินค้าลงในรถเข็น ฯลฯ
+    </script>
+</body>
+</html>

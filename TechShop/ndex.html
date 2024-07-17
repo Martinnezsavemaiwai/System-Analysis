@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - อุปกรณ์ IT คุณภาพสูง</title>
+    <style>
+        /* CSS styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 20px;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #007bff;
+        }
+
+        .hero {
+            background-image: url('hero-image.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            margin-top: 80px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .featured-products {
+            padding: 80px 0;
+        }
+
+        .featured-products h2 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-info h3 {
+            margin-bottom: 10px;
+        }
+
+        .product-info p {
+            margin-bottom: 15px;
+        }
+
+        /* Add more styles for other sections */
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            /* Add styles for mobile menu */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">TechStore</a>
+            <ul class="nav-links">
+                <li><a href="#">หน้าแรก</a></li>
+                <li><a href="#">ร้านค้า</a></li>
+                <li><a href="#">โปรโมชั่น</a></li>
+                <li><a href="#">เกี่ยวกับเรา</a></li>
+                <li><a href="#">ติดต่อเรา</a></li>
+            </ul>
+            <a href="#" class="cart-icon">🛒</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>อุปกรณ์ IT คุณภาพสูง</h1>
+                <p>ค้นพบสินค้าเทคโนโลยีล่าสุดที่ TechStore</p>
+                <a href="#" class="btn">ช้อปเลย</a>
+            </div>
+        </section>
+
+        <section class="featured-products container">
+            <h2>สินค้ายอดนิยม</h2>
+            <div class="product-grid">
+                <!-- Product cards will be dynamically added here using JavaScript -->
+            </div>
+        </section>
+
+        <!-- Add more sections for promotions, customer reviews, and available brands -->
+    </main>
+
+    <footer>
+        <!-- Add footer content -->
+    </footer>
+
+    <script>
+        // JavaScript code
+        const productGrid = document.querySelector('.product-grid');
+        const featuredProducts = [
+            { name: 'โน้ตบุ๊ก รุ่นล่าสุด', price: '฿35,900', image: 'laptop.jpg' },
+            { name: 'สมาร์ทโฟน 5G', price: '฿25,900', image: 'smartphone.jpg' },
+            { name: 'หูฟังไร้สาย', price: '฿4,900', image: 'headphones.jpg' },
+            { name: 'กล้องมิเรอร์เลส', price: '฿45,900', image: 'camera.jpg' },
+        ];
+
+        featuredProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.classList.add('product-card');
+            productCard.innerHTML = `
+                <img src="${product.image}" alt="${product.name}">
+                <div class="product-info">
+                    <h3>${product.name}</h3>
+                    <p>${product.price}</p>
+                    <a href="#" class="btn">ซื้อเลย</a>
+                </div>
+            `;
+            productGrid.appendChild(productCard);
+        });
+
+        // Add more JavaScript functionality as needed
+    </script>
+</body>
+</html>
