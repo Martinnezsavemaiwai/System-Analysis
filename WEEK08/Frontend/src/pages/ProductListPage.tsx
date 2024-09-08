@@ -1,221 +1,256 @@
-import Header from "../components/Header";
-import './ProductListPage.css'
-import React from 'react';
-import { Table, Layout} from 'antd';
-import {MoreOutlined} from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Table, Layout, message, Spin, Button, Modal } from 'antd';
 import { ColumnType } from 'antd/es/table';
+import { Link } from 'react-router-dom';
+import Header from "../components/Header";
 import NavBar from "../components/NavBar";
 import Bottom from "../components/Bottom";
+import '../stylesheet/ProductListPage.css';
+import { ProductInterface } from "../interfaces/IProduct";
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import {
+    GetProducts,
+    DeleteProductByID,
+    GetPictureByProductID
+} from '../services/http/index';
+import { ImageInterface } from '../interfaces/IImage';
 
-const {Content } = Layout;
-
-interface Product {
-    key: string;
-    id: string;
-    name: string;
-    price: string;
-    category: string;
-    brand: string;
-    stock: number;
-    image: string;
-}
-
+const { Content } = Layout;
 
 const ProductListPage: React.FC = () => {
-    const dataSource: Product[] = [
-        {
-            key: '1',
-            id: 'P4001',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) ASUS TUF GAMING F15 FX507ZC4-HN072W (MECHA GRAY) (2Y)',
-            price: '23,999.00',
-            category: 'NOTEBOOK',
-            brand: 'ASUS',
-            stock: 9,
-            image: './images/product/p01.jpg',
-        },
-        {
-            key: '2',
-            id: 'P4002',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) HP 15-FC0055AU (NATURAL SILVER) (2Y)',
-            price: '11,490.00',
-            category: 'NOTEBOOK',
-            brand: 'HP',
-            stock: 32,
-            image: './images/product/p-02.jpg',
-        },
-        {
-            key: '3',
-            id: 'P4003',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) ACER NITRO V 15 ANV15-51-578S (OBSIDIAN BLACK)',
-            price: '22,990.00',
-            category: 'NOTEBOOK',
-            brand: 'ACER',
-            stock: 50,
-            image: './images/product/p-03.jpg',
-        },
-        {
-            key: '4',
-            id: 'P4004',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) DELL INSPIRON G15-OGN553550001GTH-G15-DS-W (DARK SHADOW GRAY) (2Y)',
-            price: '28,990.00',
-            category: 'NOTEBOOK',
-            brand: 'DELL',
-            stock: 16,
-            image: './images/product/p-04.jpg',
-        },
-        {
-            key: '5',
-            id: 'P4005',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) LENOVO LOQ 15IAX9 83GS00CPTA (LUNA GREY) (3Y)',
-            price: '26,990.00',
-            category: 'NOTEBOOK',
-            brand: 'LENOVO',
-            stock: 24,
-            image: './images/product/p-05.jpg',
-        },
+    const [products, setProducts] = useState<ProductInterface[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pageSize] = useState<number>(10);
+    const [totalProducts, setTotalProducts] = useState<number>(0);
+    const [pictures, setPictures] = useState<ImageInterface[]>([]);
 
-        {
-            key: '1',
-            id: 'P4001',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) ASUS TUF GAMING F15 FX507ZC4-HN072W (MECHA GRAY) (2Y)',
-            price: '23,999.00',
-            category: 'NOTEBOOK',
-            brand: 'ASUS',
-            stock: 9,
-            image: './images/product/p01.jpg',
-        },
-        {
-            key: '2',
-            id: 'P4002',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) HP 15-FC0055AU (NATURAL SILVER) (2Y)',
-            price: '11,490.00',
-            category: 'NOTEBOOK',
-            brand: 'HP',
-            stock: 32,
-            image: './images/product/p-02.jpg',
-        },
-        {
-            key: '3',
-            id: 'P4003',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) ACER NITRO V 15 ANV15-51-578S (OBSIDIAN BLACK)',
-            price: '22,990.00',
-            category: 'NOTEBOOK',
-            brand: 'ACER',
-            stock: 50,
-            image: './images/product/p-03.jpg',
-        },
-        {
-            key: '4',
-            id: 'P4004',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) DELL INSPIRON G15-OGN553550001GTH-G15-DS-W (DARK SHADOW GRAY) (2Y)',
-            price: '28,990.00',
-            category: 'NOTEBOOK',
-            brand: 'DELL',
-            stock: 16,
-            image: './images/product/p-04.jpg',
-        },
-        {
-            key: '5',
-            id: 'P4005',
-            name: 'NOTEBOOK (โน้ตบุ๊ค) LENOVO LOQ 15IAX9 83GS00CPTA (LUNA GREY) (3Y)',
-            price: '26,990.00',
-            category: 'NOTEBOOK',
-            brand: 'LENOVO',
-            stock: 24,
-            image: './images/product/p-05.jpg',
-        },
-    ];
+    async function fetchPictures(productId: number) {
+        const res = await GetPictureByProductID(productId);
+        if (res) {
+            setPictures(res);
+        }
+    }
 
-    const columns: ColumnType<Product>[] = [
+    useEffect(() => {
+        fetchPictures(2); // Update this ID as needed
+        fetchProducts();
+    }, [currentPage]);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const response = await GetProducts();
+            if (response) {
+                const productsWithKeys = response.products.map((product: { ID: any; }) => ({
+                    ...product,
+                    key: product.ID,
+                }));
+                setProducts(productsWithKeys);
+                setTotalProducts(response.total);
+            } else {
+                message.error('Failed to load products. Please try again later.');
+            }
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+            message.error('Failed to load products. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat('th-TH').format(price) + ' ฿';
+    };
+
+    const columns: ColumnType<ProductInterface>[] = [
         {
             title: 'Product',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'ID',
+            key: 'ID',
             align: 'center',
-            responsive: ['xs', 'sm', 'md', 'lg'],
         },
         {
             title: 'Image',
-            dataIndex: 'image',
-            key: 'image',
+            dataIndex: 'Images',
+            key: 'Image',
             align: 'center',
-            render: (image: string) => (
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <img src={image} alt="Product" style={{ maxWidth: '100px', width: '100%' }} />
-                </div>
-            ),
-            responsive: ['sm', 'md', 'lg'],
+            render: (images: string[]) => {
+                const image = images?.[0]; // Get the first image
+                return (
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        {image ? (
+                            <img
+                                src={image}
+                                alt="Product"
+                                style={{ maxWidth: '100px', width: '100%' }}
+                                onError={(e) => {
+                                    e.currentTarget.src = '/path/to/default-image.png';
+                                }}
+                            />
+                        ) : (
+                            <img
+                                src="/path/to/default-image.png"
+                                alt="Default"
+                                style={{ maxWidth: '100px', width: '100%' }}
+                            />
+                        )}
+                    </div>
+                );
+            },
         },
         {
             title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'ProductName',
+            key: 'Name',
             align: 'center',
-            responsive: ['md', 'lg'],
         },
         {
             title: 'Price',
-            dataIndex: 'price',
-            key: 'price',
+            dataIndex: 'PricePerPrice',
+            key: 'Price',
+            render: (price: number) => formatPrice(price),
             align: 'center',
-            responsive: ['md', 'lg'],
         },
         {
             title: 'Category',
-            dataIndex: 'category',
-            key: 'category',
+            dataIndex: 'Category',
+            key: 'Category',
+            render: (category) => category?.CategoryName || 'N/A',
             align: 'center',
-            responsive: ['md', 'lg'],
         },
         {
             title: 'Brand',
-            dataIndex: 'brand',
-            key: 'brand',
+            dataIndex: 'Brand',
+            key: 'Brand',
+            render: (brand) => brand?.BrandName || 'N/A',
             align: 'center',
-            responsive: ['md', 'lg'],
         },
         {
             title: 'Stock',
-            dataIndex: 'stock',
-            key: 'stock',
+            dataIndex: 'Stock',
+            key: 'Stock',
             align: 'center',
-            responsive: ['md', 'lg'],
         },
         {
             title: 'Action',
             key: 'action',
             align: 'center',
-            render: () => (
-                <>
-                    <MoreOutlined />
-                </>
+            render: (_, record: ProductInterface) => (
+                <div>
+                    <Link to={`/Product/Edit/${record.ID}`}>
+                        <Button
+                            icon={<EditOutlined />}
+                            size={"large"}
+                            shape="circle"
+                            style={{ marginRight: 8 }}
+                        />
+                    </Link>
+
+                    <Button
+                        onClick={() => showModal(record)}
+                        style={{ marginLeft: 10 }}
+                        shape="circle"
+                        icon={<DeleteOutlined />}
+                        size={"large"}
+                        danger
+                    />
+                </div>
             ),
-            responsive: ['xs', 'sm', 'md', 'lg'],
         },
     ];
 
+    const [messageApi, contextHolder] = message.useMessage();
+    const [open, setOpen] = useState<boolean>(false);
+    const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
+    const [modalText, setModalText] = useState<string>();
+    const [deleteId, setDeleteId] = useState<number | undefined>(undefined);
+
+    const showModal = (val: ProductInterface) => {
+        setModalText(
+            `คุณต้องการลบสินค้าที่มีชื่อว่า "${val.ProductName}" หรือไม่ ?`
+        );
+        setDeleteId(val.ID);
+        setOpen(true);
+    };
+
+    const handleOk = async () => {
+        if (deleteId === undefined) {
+            messageApi.open({
+                type: "error",
+                content: "ไม่สามารถลบสินค้าได้ กรุณาลองอีกครั้ง",
+            });
+            setOpen(false);
+            return;
+        }
+        setConfirmLoading(true);
+        try {
+            const res = await DeleteProductByID(deleteId);
+            if (res) {
+                setOpen(false);
+                messageApi.open({
+                    type: "success",
+                    content: "ลบข้อมูลสำเร็จ",
+                });
+                fetchProducts(); // Refresh the product list
+            } else {
+                throw new Error("Failed to delete product");
+            }
+        } catch (error) {
+            console.error('Failed to delete product:', error);
+            messageApi.open({
+                type: "error",
+                content: "เกิดข้อผิดพลาดในการลบสินค้า กรุณาลองอีกครั้ง",
+            });
+        } finally {
+            setConfirmLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setOpen(false);
+    };
+
     return (
         <>
-        <Header />
-        <div className="my-layout" style={{color:"#F6F9FC"}}>
-            <Layout>
-                <NavBar />  
-                <Content style={{ padding: '0 20px', marginTop: '20px' }}>
-                    <Table
-                        dataSource={dataSource}
-                        columns={columns}
-                        pagination={false}
-                        bordered
-                        style={{ textAlign: 'center', overflowX: 'auto' }}
-                    />
-                    <Bottom />
-                    
-                </Content>
-            </Layout>
-        </div>
-        
+            {contextHolder}
+            <Header />
+            <div className="my-layout" style={{ color: "#F6F9FC" }}>
+                <Layout>
+                    <NavBar />
+                    <Content style={{ padding: '0 20px', marginTop: '20px' }}>
+                        <Spin spinning={loading}>
+                            <Table
+                                dataSource={products}
+                                columns={columns}
+                                pagination={false}
+                                bordered
+                                style={{ textAlign: 'center', overflowX: 'auto' }}
+                            />
+                        </Spin>
+                        <Bottom
+                            currentPage={currentPage}
+                            totalProducts={totalProducts}
+                            pageSize={pageSize}
+                            onPageChange={handlePageChange}
+                        />
+                    </Content>
+                </Layout>
+            </div>
+            <Modal
+                title="ลบสินค้า ?"
+                open={open}
+                onOk={handleOk}
+                confirmLoading={confirmLoading}
+                onCancel={handleCancel}
+            >
+                <p>{modalText}</p>
+            </Modal>
         </>
-        
     );
 };
 

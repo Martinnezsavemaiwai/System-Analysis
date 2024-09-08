@@ -7,7 +7,7 @@ type Category struct {
    gorm.Model
    
    CategoryName string 
-
+   
    // OwnerID ทำหน้าที่เป็น Foreign Key
    OwnerID *uint
    Owner    Owner  `gorm:"foreignKey:OwnerID"`

@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ProductListPage from './pages/ProductListPage.tsx'
-import ProductFormPage from './pages/ProductFormPage.tsx'
+import ProductCreate from './pages/create/index.tsx'
+import ProductEdit from './pages/edit/index.tsx'
+
 
 
 const router = createBrowserRouter([
@@ -14,8 +16,15 @@ const router = createBrowserRouter([
 
   {
     path: "/ProductFormPage",
-    element: <ProductFormPage/>
+    element: <ProductCreate/>
   },
+
+  {
+    path: "/Product/Edit/:id",
+    element: <ProductEdit/>
+  }
+ 
+
 ])
 
 createRoot(document.getElementById('root')!).render(

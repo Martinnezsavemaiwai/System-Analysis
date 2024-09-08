@@ -2,12 +2,12 @@ package entity
 
 import "gorm.io/gorm"
 
-type Picture struct {
+type Image struct {
 	gorm.Model
 
-	File  []byte
+	FilePath	string
 	
 	//FK
-	ProductID *uint `gorm:"type:varchar(255)"`
+	ProductID uint
 	Product   Product `gorm:"foreignKey:ProductID"` 
 }

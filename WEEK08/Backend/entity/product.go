@@ -1,18 +1,13 @@
 package entity
 
 import (
-	"time"
 
 	"gorm.io/gorm"
 )
 
 
 type Product struct {
-
-   ID        string           `gorm:"primaryKey"`
-   CreatedAt time.Time
-   UpdatedAt time.Time
-   DeletedAt gorm.DeletedAt `gorm:"index"`
+   gorm.Model
 
    ProductName string
 
@@ -22,9 +17,8 @@ type Product struct {
 
    Stock       uint
 
-
    // 1 Owner สามารถมีหลาย Category
-   Pictures []Picture `gorm:"foreignKey:ProductID"`
+   Images []Image `gorm:"foreignKey:ProductID"`
 
    // CategoryID ทำหน้าที่เป็น Foreign Key
    CategoryID  *uint 
