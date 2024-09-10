@@ -64,27 +64,28 @@ func UpdateProduct(c *gin.Context) {
 	id := c.Param("id")
 	db := config.DB()
 
-	// ค้นหาสินค้า
+	// Find the product by ID
 	if err := db.First(&product, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		return
 	}
 
-	// ผูกข้อมูลที่อัปเดตกับ struct ของสินค้า
+	// Bind the updated product details from the request body
 	var updatedProduct entity.Product
 	if err := c.ShouldBindJSON(&updatedProduct); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// อัปเดตสินค้า
+	// Update the product
 	if err := db.Model(&product).Updates(updatedProduct).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update product"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Product updated successfully"})
 }
+
 
 
 // ลบสินค้าตาม ID PATCH /product/:id

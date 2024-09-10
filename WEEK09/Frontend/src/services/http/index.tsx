@@ -69,7 +69,7 @@ async function GetProductByID(productID: number): Promise<ProductInterface | fal
 
 async function UpdateProduct(id: number | undefined, data: ProductInterface) {
     if (id === undefined) {
-        throw new Error("Product ID is required");
+        throw new Error("Product ID is undefined");
     }
 
     const requestOptions = {
@@ -78,16 +78,21 @@ async function UpdateProduct(id: number | undefined, data: ProductInterface) {
         body: JSON.stringify(data),
     };
 
+    let res = await fetch(`${apiUrl}/products/${id}`, requestOptions)
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                console.error("Failed to update product:", res.status, res.statusText);
+                return false;
+            }
+        });
 
-        const response = await fetch(`${apiUrl}/products/${id}`, requestOptions);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Error: ${response.status} - ${errorData.message || 'Unknown error'}`);
-        }
-
-        return await response.json();
+    console.log("Product update response:", res);
+    return res;
 }
+
+
 
 
 async function DeleteProductByID(id: Number | undefined) {
@@ -187,24 +192,26 @@ async function GetOwnerById(id: Number | undefined) {
 }
 
 async function ListImages() {
-    const requestOptions = {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    };
-
-    let res = await fetch(`${apiUrl}/images`, requestOptions)
-        .then((res) => {
-            if (res.status == 200) {
-                return res.json();
-            } else {
-                return false;
-            }
+    try {
+        const response = await fetch(`${apiUrl}/images`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
 
-    return res;
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.error("Failed to fetch images:", response.status, response.statusText);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error fetching images:", error);
+        return false;
+    }
 }
+
 
 async function GetImageByProductID(id: Number | undefined) {
     const requestOptions = {
