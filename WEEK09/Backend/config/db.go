@@ -73,7 +73,7 @@ func SetupDatabase() {
 	Product := entity.Product{
 		ProductName:   "NOTEBOOK (โน้ตบุ๊ค) ASUS TUF GAMING F15 FX507ZC4-HN087W",
 		Description:   "แบรนด์:ASUS|รหัสสินค้า:SKU-16696",
-		PricePerPrice: 28990.00,
+		PricePerPiece: 28990.00,
 		Stock:         10,
 		CategoryID:    categoryID,
 		BrandID:       brandID,

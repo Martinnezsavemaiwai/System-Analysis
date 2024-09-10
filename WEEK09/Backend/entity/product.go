@@ -13,7 +13,7 @@ type Product struct {
 
    Description  string    
 
-   PricePerPrice     float32   
+   PricePerPiece     float32   
 
    Stock       uint
 

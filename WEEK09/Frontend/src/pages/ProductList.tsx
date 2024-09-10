@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import NavBar from "../components/NavBar";
 import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
-import { apiUrl, DeleteProductByID, GetProducts, ListImages, } from "../services/http";
+import { apiUrl, DeleteProductByID, ListProducts, ListImages, } from "../services/http";
 import '../stylesheet/ProductListPage.css';
 import { ImageInterface } from "../interfaces/IImage";
 
@@ -98,7 +98,7 @@ function ProductList() {
     const [deleteId, setDeleteId] = useState<number>();
 
     const getProducts = async () => {
-        let resProduct = await GetProducts();
+        let resProduct = await ListProducts();
         if (resProduct) {
             setProducts(resProduct);
         }

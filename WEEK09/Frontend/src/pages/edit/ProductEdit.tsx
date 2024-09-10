@@ -1,49 +1,36 @@
 import { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, Upload, Layout, InputNumber, message } from 'antd';
-import { Link, useNavigate, useParams } from 'react-router-dom'; // เพิ่ม useParams เพื่อดึง ID
-
-import { Content } from 'antd/es/layout/layout';
-import { UploadOutlined } from '@ant-design/icons';
-import '../../stylesheet/ProductFormPage.css';
+import { Form, Input, Button, Select, Layout, InputNumber, message } from 'antd';
+import { useParams, Link } from 'react-router-dom';
 import { CategoryInterface } from '../../interfaces/ICategory';
-import { BrandInterface } from '../../interfaces/IBrand';
 import { ProductInterface } from '../../interfaces/IProduct';
-import { GetBrands, GetCategories, GetProductByID, UpdateProduct } from '../../services/http';
+import { GetProductByID, UpdateProduct, GetBrands, GetCategories, UpdateImage } from '../../services/http';
+import { BrandInterface } from '../../interfaces/IBrand';
 import Header from '../../components/Header';
-
+import { Content } from 'antd/es/layout/layout';
+import '../../stylesheet/ProductFormPage.css';
 
 const { Option } = Select;
 
 function ProductEdit() {
-  const navigate = useNavigate();
-  const { id } = useParams(); // ดึง ID จาก URL
-  const [loading] = useState(false);
+  const { id } = useParams<{ id: string }>(); // Get product ID from the route
+  const [images, setImages] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [brands, setBrands] = useState<BrandInterface[]>([]);
-  const [product, setProduct] = useState<ProductInterface | null>(null); // เก็บข้อมูลสินค้าที่จะอัพเดท
+  const [product, setProduct] = useState<ProductInterface | null>(null);
   const [form] = Form.useForm();
 
-  const onFinish = async (values: any) => {
-    values.ID = product?.ID;
-    let res = await UpdateProduct(values);
+  // Fetch product data by ID
+  const fetchProduct = async () => {
+    const res = await GetProductByID(Number(id));
     if (res) {
-      messageApi.open({
-        type: "success",
-        content: res.message,
-      });
-      setTimeout(function () {
-        navigate("/");
-      }, 2000);
-    } else {
-      messageApi.open({
-        type: "error",
-        content: res.message,
-      });
+      setProduct(res);
+      form.setFieldsValue(res); // Populate form with product data
     }
   };
 
-
+  // Fetch brands and categories
   const getBrands = async () => {
     const res = await GetBrands();
     if (res) {
@@ -58,35 +45,66 @@ function ProductEdit() {
     }
   };
 
-  const getProduct = async () => {
-    let res = await GetProductByID(Number(id)); // ดึงข้อมูลสินค้าตาม ID
-    if (res) {
-      setProduct(res);
-      form.setFieldsValue({
-        ProductName: res.ProductName,
-        Description: res.Description,
-        PricePerPiece: res.PricePerPiece,
-        Stock: res.Stock,
-        BrandID: res.BrandId,
-        CategoryID: res.CategoryId,
-      });
-    }
+  // Handle image change
+  const handleImageChange = (e: any) => {
+    const file = e.target.files;
+    setImages(file);
   };
 
+  // Handle form submit
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
 
+      const updatedProduct: ProductInterface = {
+        ...product,
+        ProductName: values.ProductName,
+        Description: values.Description,
+        PricePerPiece: values.PricePerPiece,
+        Stock: values.Stock,
+        BrandId: values.BrandId,
+        CategoryId: values.CategoryId,
+      };
+
+      const res = await UpdateProduct(Number(id), updatedProduct);
+      console.log('Product update response:', res);
+
+
+      if (images.length > 0) {
+        const formData = new FormData();
+        for (const image of images) {
+          formData.append('image', image);
+        }
+        await UpdateImage(formData, Number(id));
+      }
+
+      if (res) {
+        messageApi.open({
+          type: 'success',
+          content: 'Product updated successfully',
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: 'Error occurred while updating product!',
+        });
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+      messageApi.open({
+        type: 'error',
+        content: 'Server connection error!',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     getBrands();
     getCategories();
-    getProduct();
+    fetchProduct();
   }, [id]);
-
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
 
   return (
     <>
@@ -193,7 +211,7 @@ function ProductEdit() {
                 </Form.Item>
 
                 <Form.Item
-                  name="BrandId" 
+                  name="BrandId"
                   label="Brand"
                   rules={[
                     {
@@ -205,7 +223,7 @@ function ProductEdit() {
                 >
                   <Select allowClear placeholder="Select Product Brand">
                     {brands.map((item) => (
-                      <Option value={item.ID} key={item.ID}>
+                      <Option value={item.ID} key={item.BrandName}>
                         {item.BrandName}
                       </Option>
                     ))}
@@ -213,7 +231,7 @@ function ProductEdit() {
                 </Form.Item>
 
                 <Form.Item
-                  name="CategoryId" 
+                  name="CategoryId"
                   label="Category"
                   rules={[
                     {
@@ -225,59 +243,24 @@ function ProductEdit() {
                 >
                   <Select allowClear placeholder="Select Category">
                     {categories.map((item) => (
-                      <Option value={item.ID} key={item.ID}>
+                      <Option value={item.ID} key={item.CategoryName}>
                         {item.CategoryName}
                       </Option>
                     ))}
                   </Select>
                 </Form.Item>
 
-
                 <Form.Item
                   name="Picture"
                   label="Images"
-                  valuePropName="fileList"
-                  getValueFromEvent={normFile}
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please upload the product images!',
-                    },
-                  ]}
                   style={{ flex: '0 0 100%' }}
                 >
-                  <Upload
-                    name="file"
-                    listType="picture"
-                    multiple
-                    maxCount={6}
-                    beforeUpload={(file) => {
-                      const isJpgOrPng =
-                        file.type === 'image/jpeg' ||
-                        file.type === 'image/png';
-                      if (!isJpgOrPng) {
-                        messageApi.open({
-                          type: 'error',
-                          content: 'You can only upload JPG/PNG files!',
-                        });
-                        return Upload.LIST_IGNORE;
-                      }
-                      const isLt2M = file.size / 1024 / 1024 < 2;
-                      if (!isLt2M) {
-                        messageApi.open({
-                          type: 'error',
-                          content: 'Image must smaller than 2MB!',
-                        });
-                        return Upload.LIST_IGNORE;
-                      }
-                      return false;
-                    }}
-                  >
-                    <Button icon={<UploadOutlined />}>Click to upload</Button>
-                  </Upload>
+                  <input type="file" className="input-file" multiple onChange={handleImageChange} />
                 </Form.Item>
 
-                <Form.Item style={{ width: '100%', textAlign: 'center' }}>
+                <Form.Item
+                  style={{ width: '100%', textAlign: 'center' }}
+                >
                   <Link to="/">
                     <Button id="cancel-bt" type="default">
                       Cancel

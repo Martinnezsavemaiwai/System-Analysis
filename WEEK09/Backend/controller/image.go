@@ -95,3 +95,71 @@ func CreateImage(c *gin.Context){
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Files uploaded successfully"})
 }
+
+// PATCH /image/:imageId
+func UpdateImage(c *gin.Context) {
+	// แปลง imageID จาก string เป็น uint
+	imageID, err := strconv.ParseUint(c.Param("imageId"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image ID"})
+		return
+	}
+
+	db := config.DB()
+
+	// ค้นหา image ที่เกี่ยวข้องกับ imageID
+	var image entity.Image
+	if err := db.First(&image, imageID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Image not found"})
+		return
+	}
+
+	// รับไฟล์ใหม่จาก request (ไม่บังคับว่าต้องมี)
+	file, err := c.FormFile("image")
+	if err == nil {
+		// ถ้ามีการอัปโหลดไฟล์ใหม่
+		// ลบไฟล์เก่าที่เก็บไว้
+		if err := os.Remove(image.FilePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete old image"})
+			return
+		}
+
+		// สร้าง path ใหม่สำหรับไฟล์ใหม่
+		subfolder := "product" + strconv.Itoa(int(image.ProductID))
+		fileName := filepath.Base(file.Filename)
+		filePath := filepath.Join("images", "product", subfolder, fileName)
+
+		// สร้างตำแหน่งโฟลเดอร์ถ้ายังไม่มี
+		if err := os.MkdirAll(filepath.Join("images", "product", subfolder), os.ModePerm); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create directory"})
+			return
+		}
+
+		// บันทึกไฟล์ใหม่
+		if err := c.SaveUploadedFile(file, filePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save new image"})
+			return
+		}
+
+		// อัปเดต FilePath ในฐานข้อมูล
+		image.FilePath = filePath
+	}
+
+	// ตรวจสอบฟิลด์อื่นๆ ที่ต้องการอัปเดตจาก request body (ถ้ามี)
+	productID, _ := strconv.ParseUint(c.PostForm("product_id"), 10, 64)
+	if productID != 0 {
+		var product entity.Product
+		if err := db.First(&product, productID).Error; err == nil {
+			image.ProductID = uint(productID)
+			image.Product = product
+		}
+	}
+
+	// บันทึกการอัปเดตกลับไปยังฐานข้อมูล
+	if err := db.Save(&image).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update image"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Image updated successfully", "image": image})
+}

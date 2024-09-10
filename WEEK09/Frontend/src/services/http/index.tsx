@@ -22,7 +22,7 @@ async function CreateProduct(data: ProductInterface) {
     return res;
 }
 
-async function GetProducts() {
+async function ListProducts() {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -67,23 +67,26 @@ async function GetProductByID(productID: number): Promise<ProductInterface | fal
 }
 
 
-async function UpdateProduct(data: ProductInterface) {
+async function UpdateProduct(id: number | undefined, data: ProductInterface) {
+    if (id === undefined) {
+        throw new Error("Product ID is required");
+    }
+
     const requestOptions = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
     };
 
-    let res = await fetch(`${apiUrl}/products`, requestOptions)
-        .then((res) => {
-            if (res.status == 200) {
-                return res.json();
-            } else {
-                return false;
-            }
-        });
 
-    return res;
+        const response = await fetch(`${apiUrl}/products/${id}`, requestOptions);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error: ${response.status} - ${errorData.message || 'Unknown error'}`);
+        }
+
+        return await response.json();
 }
 
 
@@ -243,12 +246,32 @@ async function CreateImage(formData: FormData,id: Number | undefined) {
     return res;
   }
 
+async function UpdateImage(formData: FormData,id: Number | undefined) {
+    const requestOptions = {
+      method: "PATCH",
+      // headers: { "Content-Type": "application/json" },
+      body: formData,
+    };
+  
+    let res = await fetch(`${apiUrl}/product-image/${id}`, requestOptions).then(
+      (res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      }
+    );
+  
+    return res;
+  }
+
 
   
 
 export {
     CreateProduct,
-    GetProducts,
+    ListProducts,
     GetProductByID,
     UpdateProduct,
     DeleteProductByID,
@@ -262,5 +285,6 @@ export {
     
     ListImages,
     GetImageByProductID,   
-    CreateImage
+    CreateImage,
+    UpdateImage
 }

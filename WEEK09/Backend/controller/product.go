@@ -58,7 +58,7 @@ func GetProductByID(c *gin.Context) {
     c.JSON(http.StatusOK, product)
 }
 
-//  อัปเดตข้อมูลสินค้า PATCH /product/:id
+//  อัปเดตข้อมูลสินค้า PATCH /products/:id
 func UpdateProduct(c *gin.Context) {
 	var product entity.Product
 	id := c.Param("id")

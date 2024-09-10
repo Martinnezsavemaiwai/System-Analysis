@@ -20,7 +20,7 @@ function ProductCreate() {
   const [form] = Form.useForm();
 
   console.log(images);
-  
+
 
   const onFinish = async (values: any) => {
     try {
@@ -29,7 +29,7 @@ function ProductCreate() {
       const dataProduct: ProductInterface = {
         ProductName: values.ProductName,
         Description: values.Description,
-        PricePerPiece: values.PricePerPeice,
+        PricePerPiece: values.PricePerPiece,
         Stock: values.Stock,
         BrandId: values.BrandId,
         CategoryId: values.CategoryId,
@@ -38,11 +38,11 @@ function ProductCreate() {
       const res = await CreateProduct(dataProduct);
 
       const formData = new FormData();
-        for (const image of images) {
-            formData.append('image', image);
-        }
+      for (const image of images) {
+        formData.append('image', image);
+      }
 
-      CreateImage(formData,res.data.ID)
+      CreateImage(formData, res.data.ID)
 
       if (res) {
         messageApi.open({
@@ -80,7 +80,7 @@ function ProductCreate() {
     }
   };
 
-  const handleImageChange = (e:any) => {
+  const handleImageChange = (e: any) => {
     const file = e.target.files
     setImages(file);
   };
@@ -160,7 +160,7 @@ function ProductCreate() {
                 </Form.Item>
 
                 <Form.Item
-                  name="PricePerPrice"
+                  name="PricePerPiece"
                   label="Price"
                   rules={[
                     {
@@ -234,7 +234,7 @@ function ProductCreate() {
                     ))}
                   </Select>
                 </Form.Item>
-                {/* <Form.Item
+                <Form.Item
                   name="Picture"
                   label="Images"
                   rules={[
@@ -245,17 +245,10 @@ function ProductCreate() {
                   ]}
                   style={{ flex: '0 0 100%' }}
                 >
-                  <Upload
-                    name="file"
-                    listType="picture"
-                    onChange={handleImageChange}
-                    multiple
-                  >
-                    <Button icon={<UploadOutlined />}>Click to upload</Button>
-                  </Upload>
-                </Form.Item> */}
+                  <input type="file" className='input-file' multiple onChange={handleImageChange} />
 
-                <input type="file" className='input-file' multiple onChange={handleImageChange}/>
+                </Form.Item>
+
 
                 <Form.Item
                   style={{ width: '100%', textAlign: 'center' }}

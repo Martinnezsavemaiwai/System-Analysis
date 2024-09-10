@@ -33,7 +33,7 @@ func ListProducts(c *gin.Context) {
 
 	db := config.DB()
 
-	db.Preload("Category.Owner").Preload("Brand").Find(&products)
+	db.Preload("Category.Owner").Preload("Brand").Preload("Image").Find(&products)
 
 	c.JSON(http.StatusOK, &products)
 }
@@ -44,7 +44,7 @@ func GetProductByID(c *gin.Context) {
 	var product entity.Product
 
 	db := config.DB()
-	results := db.Preload("Category.Owner").Preload("Brand").First(&product, ID)
+	results := db.Preload("Category.Owner").Preload("Brand").Preload("Image").First(&product, ID)
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
 		return

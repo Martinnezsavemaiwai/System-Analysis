@@ -1,4 +1,3 @@
-
 export interface ProductInterface {
     ID?:number;
     ProductName?:string;
