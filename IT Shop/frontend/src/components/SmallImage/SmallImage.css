@@ -1,0 +1,32 @@
+@import "../../stylesheet/ColorSheet.css";
+
+@media only screen and (max-width:5000px){
+    .smallimage-container{
+        min-width: 90px;
+        max-width: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0px 5px;
+        overflow: hidden;
+    
+        & .small-img{
+            width: 88%;
+            transition: all 0.3s;
+            border-radius: 15px;
+            border: 3px solid ;
+        }
+    
+        & .small-img:hover{
+            width: 90%;
+            border-color: blue;
+        }
+        
+    }
+}
+
+@media only screen and (max-width:360px){
+    .smallimage-container{
+        margin: 0px;
+    }
+}

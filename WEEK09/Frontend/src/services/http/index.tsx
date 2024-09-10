@@ -1,7 +1,7 @@
 import { ImageInterface } from "../../interfaces/IImage";
 import { ProductInterface } from "../../interfaces/IProduct";
 
-const apiUrl = "http://localhost:8000";
+export const apiUrl = "http://localhost:8000";
 
 async function CreateProduct(data: ProductInterface) {
     const requestOptions = {
@@ -89,7 +89,7 @@ async function UpdateProduct(data: ProductInterface) {
 
 async function DeleteProductByID(id: Number | undefined) {
     const requestOptions = {
-        method: "PATH"
+        method: "DELETE"
     };
 
     let res = await fetch(`${apiUrl}/products/${id}`, requestOptions)
@@ -183,6 +183,26 @@ async function GetOwnerById(id: Number | undefined) {
     return res;
 }
 
+async function ListImages() {
+    const requestOptions = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    };
+
+    let res = await fetch(`${apiUrl}/images`, requestOptions)
+        .then((res) => {
+            if (res.status == 200) {
+                return res.json();
+            } else {
+                return false;
+            }
+        });
+
+    return res;
+}
+
 async function GetImageByProductID(id: Number | undefined) {
     const requestOptions = {
         method: "GET",
@@ -203,24 +223,25 @@ async function GetImageByProductID(id: Number | undefined) {
     return res;
 }
 
-async function CreateImage(data: ImageInterface, productId: number) {
+async function CreateImage(formData: FormData,id: Number | undefined) {
     const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-    };  
-
-    let res = await fetch(`${apiUrl}/images/${productId}`, requestOptions)
-        .then((res) => {
-            if (res.status == 201) {
-                return res.json();
-            } else {
-                return false;
-            }
-        });
-
-    return res; 
-}
+      method: "POST",
+      // headers: { "Content-Type": "application/json" },
+      body: formData,
+    };
+  
+    let res = await fetch(`${apiUrl}/product-image/${id}`, requestOptions).then(
+      (res) => {
+        if (res.status == 201) {
+          return res.json();
+        } else {
+          return false;
+        }
+      }
+    );
+  
+    return res;
+  }
 
 
   
@@ -239,6 +260,7 @@ export {
     GetOwner,
     GetOwnerById,
     
+    ListImages,
     GetImageByProductID,   
     CreateImage
 }

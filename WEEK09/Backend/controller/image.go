@@ -11,6 +11,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func ListImages(c *gin.Context) {
+	var images []entity.Image
+
+	db := config.DB()
+	if err := db.Find(&images).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, images)
+}
+
+
+
+
+
 // GET /images/:productId
 func GetImageByProductByID(c *gin.Context){
 	productID := c.Param("productId")
@@ -44,7 +59,7 @@ func CreateImage(c *gin.Context){
 	files := form.File["image"]
 
 	for _, file := range files{
-		subfolder := "product1"		
+		subfolder := "product"+strconv.Itoa(int(productID))
 		fileName := filepath.Base(file.Filename)
 		filePath := filepath.Join("images", "product", subfolder, fileName)	
 

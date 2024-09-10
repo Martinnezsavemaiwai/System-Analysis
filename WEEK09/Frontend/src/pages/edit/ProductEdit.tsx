@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Upload, Layout, InputNumber, message } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom'; // เพิ่ม useParams เพื่อดึง ID
-import { CategoryInterface } from '../../interfaces/ICategory';
-import { ProductInterface } from '../../interfaces/IProduct';
-import { GetProductByID, UpdateProduct, GetBrands, GetCategories } from '../../services/http'; // ใช้ UpdateProduct แทน CreateProduct
-import { BrandInterface } from '../../interfaces/IBrand';
-import Header from '../../components/Header';
+
 import { Content } from 'antd/es/layout/layout';
 import { UploadOutlined } from '@ant-design/icons';
 import '../../stylesheet/ProductFormPage.css';
+import { CategoryInterface } from '../../interfaces/ICategory';
+import { BrandInterface } from '../../interfaces/IBrand';
+import { ProductInterface } from '../../interfaces/IProduct';
+import { GetBrands, GetCategories, GetProductByID, UpdateProduct } from '../../services/http';
+import Header from '../../components/Header';
+
 
 const { Option } = Select;
 
@@ -31,7 +33,7 @@ function ProductEdit() {
         content: res.message,
       });
       setTimeout(function () {
-        navigate("/customer");
+        navigate("/");
       }, 2000);
     } else {
       messageApi.open({
@@ -40,7 +42,7 @@ function ProductEdit() {
       });
     }
   };
-  
+
 
   const getBrands = async () => {
     const res = await GetBrands();
@@ -63,20 +65,20 @@ function ProductEdit() {
       form.setFieldsValue({
         ProductName: res.ProductName,
         Description: res.Description,
-        PricePerPrice: res.PricePerPrice,
+        PricePerPiece: res.PricePerPiece,
         Stock: res.Stock,
-        BrandId: res.BrandId,
-        CategoryId: res.CategoryId,
+        BrandID: res.BrandId,
+        CategoryID: res.CategoryId,
       });
     }
   };
-  
-  
+
+
 
   useEffect(() => {
     getBrands();
     getCategories();
-    getProduct(); 
+    getProduct();
   }, [id]);
 
   const normFile = (e: any) => {
@@ -155,7 +157,7 @@ function ProductEdit() {
                 </Form.Item>
 
                 <Form.Item
-                  name="PricePerPrice"
+                  name="PricePerPiece"
                   label="Price"
                   rules={[
                     {
@@ -191,7 +193,7 @@ function ProductEdit() {
                 </Form.Item>
 
                 <Form.Item
-                  name="BrandId"
+                  name="BrandId" 
                   label="Brand"
                   rules={[
                     {
@@ -203,7 +205,7 @@ function ProductEdit() {
                 >
                   <Select allowClear placeholder="Select Product Brand">
                     {brands.map((item) => (
-                      <Option value={item.ID} key={item.BrandName}>
+                      <Option value={item.ID} key={item.ID}>
                         {item.BrandName}
                       </Option>
                     ))}
@@ -211,7 +213,7 @@ function ProductEdit() {
                 </Form.Item>
 
                 <Form.Item
-                  name="CategoryId"
+                  name="CategoryId" 
                   label="Category"
                   rules={[
                     {
@@ -223,12 +225,13 @@ function ProductEdit() {
                 >
                   <Select allowClear placeholder="Select Category">
                     {categories.map((item) => (
-                      <Option value={item.ID} key={item.CategoryName}>
+                      <Option value={item.ID} key={item.ID}>
                         {item.CategoryName}
                       </Option>
                     ))}
                   </Select>
                 </Form.Item>
+
 
                 <Form.Item
                   name="Picture"

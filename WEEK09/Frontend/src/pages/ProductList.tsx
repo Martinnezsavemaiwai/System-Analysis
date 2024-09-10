@@ -6,14 +6,21 @@ import Header from "../components/Header";
 import NavBar from "../components/NavBar";
 import { Content } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
-import { DeleteProductByID, GetProducts } from "../services/http";
+import { apiUrl, DeleteProductByID, GetProducts, ListImages, } from "../services/http";
 import '../stylesheet/ProductListPage.css';
+import { ImageInterface } from "../interfaces/IImage";
 
 
 function ProductList() {
     const navigate = useNavigate();
+    const [images, setImage] = useState<ImageInterface[]>([]);
+    
+    const imageUrl = images.length>0 ? `${apiUrl}/${images[0].FilePath}` : ""
 
+    console.log(imageUrl)
+    
     const columns: ColumnsType<ProductInterface> = [
+
         {
             title: 'ID',
             dataIndex: 'ID',
@@ -21,6 +28,16 @@ function ProductList() {
             align: 'center',
 
         },
+
+        // {
+        //     title: 'Image',
+        //     dataIndex: 'Image',
+        //     key: 'Image',
+        //     render: (image) => <img src={`${apiUrl}/${image?.FilePath}`} alt="image" width={100} height={100} />,
+        //     align: 'center',
+
+        // },
+
         {
             title: 'Product Name',
             dataIndex: 'ProductName',
@@ -30,9 +47,9 @@ function ProductList() {
         },
         {
             title: 'Price',
-            dataIndex: 'PricePerPrice', 
+            dataIndex: 'PricePerPiece', 
             key: 'Price',
-            render: (price: number) => formatPrice(price),
+            render: (price: number | undefined) => price ? formatPrice(price) : 'N/A',            
             align: 'center',
 
         },
@@ -81,11 +98,18 @@ function ProductList() {
     const [deleteId, setDeleteId] = useState<number>();
 
     const getProducts = async () => {
-        let res = await GetProducts();
-        if (res) {
-            setProducts(res);
+        let resProduct = await GetProducts();
+        if (resProduct) {
+            setProducts(resProduct);
+        }
+
+        let resImage = await ListImages();
+        if (resImage) {
+            setImage(resImage);
         }
     };
+
+
 
     const showModal = (val: ProductInterface) => {
         setModalText(`คุณต้องการลบสินค้าชื่อ "${val.ProductName}" หรือไม่ ?`);
@@ -169,6 +193,7 @@ function ProductList() {
                     <p>{modalText}</p>
                 </Modal>
             </div>
+            <img src="http://localhost:8000/images\product\product9\proDUCK1.jpg" alt="" />
         </>
     );
 }

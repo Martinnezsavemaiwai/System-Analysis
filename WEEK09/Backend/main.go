@@ -18,6 +18,8 @@ func main() {
 
 	r.Use(CORSMiddleware())
 
+	r.Static("/images", "./images")
+
 	router := r.Group("")
 	{
 		// Product Routes
@@ -25,7 +27,7 @@ func main() {
 		router.GET("/products/:id", controller.GetProductByID)
 		router.POST("/products", controller.CreateProduct)
 		router.PATCH("/products", controller.UpdateProduct)
-		router.PATCH("/products/:id", controller.DeleteProduct)
+		router.DELETE("/products/:id", controller.DeleteProduct)
 
 		// Brand Routes
 		router.GET("/brands", controller.ListBrands)
@@ -38,8 +40,9 @@ func main() {
 		router.GET("/owner/:id", controller.GetOwnerByID)
 
 		// Image Routes
-		router.GET("/images/:productId", controller.GetImageByProductByID)
-		router.POST("/images/:productId", controller.CreateImage)
+		router.GET("/images", controller.ListImages)
+		router.GET("/product-images/:productId", controller.GetImageByProductByID)
+		router.POST("/product-image/:productId", controller.CreateImage)
 	}
 
 	r.GET("/", func(c *gin.Context) {

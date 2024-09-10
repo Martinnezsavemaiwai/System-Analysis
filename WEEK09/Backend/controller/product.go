@@ -26,7 +26,7 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": product})
+	c.JSON(http.StatusCreated, gin.H{"data": product})
 }
 
 
@@ -35,7 +35,7 @@ func ListProducts(c *gin.Context) {
 	var products []entity.Product
 
 	db := config.DB()
-	if err := db.Preload("Category").Preload("Brand").Find(&products).Error; err != nil {
+	if err := db.Preload("Category").Preload("Brand").Preload("Images").Find(&products).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -50,7 +50,7 @@ func GetProductByID(c *gin.Context) {
     db := config.DB()
     
     // เพิ่มเงื่อนไขการค้นหา "id = ?" เพื่อค้นหาสินค้าที่มี id ที่ตรงกัน
-    if err := db.Preload("Category").Preload("Brand").First(&product, "id = ?", id).Error; err != nil {
+    if err := db.Preload("Category").Preload("Brand").Preload("Images").First(&product, "id = ?", id).Error; err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
         return
     }

@@ -48,49 +48,25 @@ func SetupDatabase() {
 		Email: owner.Email,
 	})
 
-	ownerID := uint(1)
-	categories := []*entity.Category{
-		{
-			CategoryName: "NoteBook",
-			OwnerID:      ownerID,
-		},
-		{
-			CategoryName: "SmartTV",
-			OwnerID:      ownerID,
-		},
-		{
-			CategoryName: "Smartphone",
-			OwnerID:      ownerID,
-		},
-	}
-	for _, category := range categories {
-		db.FirstOrCreate(category, &entity.Category{
-			CategoryName: category.CategoryName,
-		})
-	}
-
-	brands := []*entity.Brand{
-		{
-			BrandName: "ASUS",
-		},
-		{
-			BrandName: "LENOVO",
-		},
-		{
-			BrandName: "DELL",
-		},
-		{
-			BrandName: "ACER",
-		},
-		{
-			BrandName: "SUMSUNG",
-		},
-	}
-	for _, brand := range brands {
-		db.FirstOrCreate(brand, &entity.Brand{
-			BrandName: brand.BrandName,
-		})
-	}
+		// Create Category
+		categories := []string{"Notebook", "Monitor", "RAM", "Graphic Card", "CPU", "Mainboard", "Computer", "Keyboard"}
+		for _, category := range categories {
+			path := fmt.Sprintf("images/category/%s.png", category)
+				err := createCategory(category, path, 1)
+				if err != nil {
+					panic(err)
+				}
+		}
+	
+		// Create Brand
+		brands := []string{"ASUS", "LENOVO", "T-FORCE", "MSI", "SAMSUNG", "NVIDIA", "INTEL", "STEELSERIES"}
+		for _, brand := range brands {
+			path := fmt.Sprintf("images/brand/%s.png", brand)
+				err := createBrand(brand, path)
+				if err != nil {
+					panic(err)
+				}
+		}
 
 	categoryID := uint(1)
 	brandID := uint(1)
@@ -120,6 +96,25 @@ func SetupDatabase() {
 		}
 	}
 
+}
+
+
+func createCategory(name string, filePath string, id uint) error {
+    category := entity.Category{CategoryName: name, ImagePath: filePath, OwnerID: id}
+
+	if err := db.Where("category_name = ?", &category.CategoryName).FirstOrCreate(&category).Error; err != nil {
+        return err
+    }
+    return nil
+}
+
+func createBrand(name string, filePath string) error {
+    brand := entity.Brand{BrandName: name, ImagePath: filePath}
+
+	if err := db.Where("brand_name = ?", &brand.BrandName).FirstOrCreate(&brand).Error; err != nil {
+        return err
+    }
+    return nil
 }
 
 func createImage(filePath string, id uint) error {

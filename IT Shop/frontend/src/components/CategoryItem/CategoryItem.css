@@ -1,0 +1,49 @@
+@import "../../stylesheet/ColorSheet.css";
+
+@media only screen and (max-width:5000px){
+    .container-cat-item{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        border: 3px solid transparent;
+        border-radius: 15px;
+        transition: all 0.5s;
+        height: 47px;
+        font-size: 14px;
+    
+        & .img-box{
+            width: 60px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0px 7.5px;
+    
+            & img{
+                height: 100%;
+            }
+        }
+    
+        & .title-box{
+            width: 115px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    
+    .container-cat-item:hover{
+        border: 3px solid var(--subtheme-color1);
+        cursor: pointer;
+    }
+}
+
+@media only screen and (max-width:790px){
+    .container-cat-item .title-box{
+        display: none;
+    }
+    .container-cat-item .img-box{
+        margin-right: 0px;
+    }
+}

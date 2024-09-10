@@ -1,24 +1,26 @@
 import { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, Upload, Layout, InputNumber, message } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Select, Layout, InputNumber, message } from 'antd';
+import { Link } from 'react-router-dom';
 import { CategoryInterface } from '../../interfaces/ICategory';
 import { ProductInterface } from '../../interfaces/IProduct';
-import { CreateProduct, GetBrands, GetCategories } from '../../services/http';
+import { CreateImage, CreateProduct, GetBrands, GetCategories } from '../../services/http';
 import { BrandInterface } from '../../interfaces/IBrand';
 import Header from '../../components/Header';
 import { Content } from 'antd/es/layout/layout';
-import { UploadOutlined } from '@ant-design/icons';
 import '../../stylesheet/ProductFormPage.css';
 
 const { Option } = Select;
 
 function ProductCreate() {
-  const navigate = useNavigate();
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [brands, setBrands] = useState<BrandInterface[]>([]);
   const [form] = Form.useForm();
+
+  console.log(images);
+  
 
   const onFinish = async (values: any) => {
     try {
@@ -27,7 +29,7 @@ function ProductCreate() {
       const dataProduct: ProductInterface = {
         ProductName: values.ProductName,
         Description: values.Description,
-        PricePerPrice: values.PricePerPrice,
+        PricePerPiece: values.PricePerPeice,
         Stock: values.Stock,
         BrandId: values.BrandId,
         CategoryId: values.CategoryId,
@@ -35,14 +37,18 @@ function ProductCreate() {
 
       const res = await CreateProduct(dataProduct);
 
+      const formData = new FormData();
+        for (const image of images) {
+            formData.append('image', image);
+        }
+
+      CreateImage(formData,res.data.ID)
+
       if (res) {
         messageApi.open({
           type: 'success',
           content: 'บันทึกข้อมูลสำเร็จ',
         });
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
       } else {
         messageApi.open({
           type: 'error',
@@ -74,17 +80,16 @@ function ProductCreate() {
     }
   };
 
+  const handleImageChange = (e:any) => {
+    const file = e.target.files
+    setImages(file);
+  };
+
   useEffect(() => {
     getBrands();
     getCategories();
   }, []);
 
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
 
   return (
     <>
@@ -229,12 +234,9 @@ function ProductCreate() {
                     ))}
                   </Select>
                 </Form.Item>
-
-                <Form.Item
+                {/* <Form.Item
                   name="Picture"
                   label="Images"
-                  valuePropName="fileList"
-                  getValueFromEvent={normFile}
                   rules={[
                     {
                       required: true,
@@ -246,33 +248,14 @@ function ProductCreate() {
                   <Upload
                     name="file"
                     listType="picture"
+                    onChange={handleImageChange}
                     multiple
-                    maxCount={6}
-                    beforeUpload={(file) => {
-                      const isJpgOrPng =
-                        file.type === 'image/jpeg' ||
-                        file.type === 'image/png';
-                      if (!isJpgOrPng) {
-                        messageApi.open({
-                          type: 'error',
-                          content: 'You can only upload JPG/PNG files!',
-                        });
-                        return Upload.LIST_IGNORE;
-                      }
-                      const isLt2M = file.size / 1024 / 1024 < 2;
-                      if (!isLt2M) {
-                        messageApi.open({
-                          type: 'error',
-                          content: 'Image must smaller than 2MB!',
-                        });
-                        return Upload.LIST_IGNORE;
-                      }
-                      return false;
-                    }}
                   >
                     <Button icon={<UploadOutlined />}>Click to upload</Button>
                   </Upload>
-                </Form.Item>
+                </Form.Item> */}
+
+                <input type="file" className='input-file' multiple onChange={handleImageChange}/>
 
                 <Form.Item
                   style={{ width: '100%', textAlign: 'center' }}

@@ -1,0 +1,50 @@
+@import "../../stylesheet/ColorSheet.css";
+
+@media only screen and (max-width:5000px){
+    .container-brand-item{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 5px;
+        border: 3px solid transparent;
+        border-radius: 15px;
+        transition: all 0.5s;
+        height: 47px;
+        font-size: 14px;
+    
+        & .img-box{
+            height: 30px;
+            width: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0px 7.5px;
+    
+            & img{
+                width: 100%;
+            }
+        }
+    
+        & .title-box{
+            width: 115px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
+    }
+    
+    .container-brand-item:hover{
+        border: 3px solid var(--subtheme-color1);
+        cursor: pointer;
+    }
+}
+
+@media only screen and (max-width:790px){
+    .container-brand-item .title-box{
+        display: none;
+    }
+    .container-brand-item .img-box{
+        margin-right: 0px;
+    }
+}
